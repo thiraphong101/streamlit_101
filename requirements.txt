@@ -9,5 +9,5 @@ altair==4.2.0
 matplotlib==3.3.2
 seaborn
 numpy==1.19.4
-pydeck==0.8.0b3
+pydeck==0.7.1
 plotly
