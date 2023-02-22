@@ -10,3 +10,4 @@ matplotlib
 seaborn
 numpy==1.19.4
 pydeck==0.8.0b3
+plotly
