@@ -44,8 +44,7 @@ def explore(df):
     # SUMMARY
 
 
-
-
+    st.write('กราฟแท่งแสดงจำนวนทั้งหมด')
     chart = df_types['Line'].unique()
     chart = df['Line']
     result = {}
@@ -166,9 +165,8 @@ def transform(df):
 
     if show_ScatterplotLayer:
 
-
+        st.write('แสดง ScatterplotLayer ของพื้นที่ทั้งหมด')
         import pydeck as pdk
-
         chart_data = df[["lon", "lat","Line","Date"]]
         #print(chart_data['lon'])
         tooltip = {
@@ -235,14 +233,11 @@ def transform(df):
 
 
         options = st.multiselect(
-            'What are your favorite colors',df['Line'].unique())
-        st.write('You selected:', df[df['Line'].isin(options)])
-        print(options)
-        color_select_changed = False
+            'กรุณาเลือกพื้นที่ เพื่อให้แสดงบน ScatterplotLayer',df['Line'].unique())
+        st.write('แสดงข้อมูลเฉพาะที่เลือก:', df[df['Line'].isin(options)])
         # If the user selects one or more colors:
         if options:
             # Set the flag to indicate the color select has been changed
-            color_select_changed = True
             import pydeck as pdk
 
             chart_data = df[["lon", "lat","Line","Date"]]
