@@ -137,7 +137,8 @@ def transform(df):
 
     # Toggles for the feature selection in sidebar
     show_heatmap = st.sidebar.checkbox("Show Heatmap")
-    show_ScatterplotLayer = st.sidebar.checkbox("Show ScatterplotLayers")
+    show_ScatterplotLayer = st.sidebar.checkbox("Show Scatterplot Layers")
+    show_line = st.sidebar.checkbox("Show Line Layers")
     show_histograms = st.sidebar.checkbox("Show Histograms")
 
     if show_heatmap:
@@ -306,7 +307,79 @@ def transform(df):
                 
             ))
 
+    if show_line:
+        import pydeck as pdk
+        df1 = df[["lon", "lat","Line","Date"]]
+        chart_data_data = df[["lon", "lat","Line","Date"]]
+        #print(chart_data)
+        options = st.multiselect(
+            'กรุณาเลือกพื้นที่ เพื่อให้แสดงเส้น',chart_data_data['Line'].unique())
+        if options:
+            #st.write('แสดงข้อมูลเฉพาะที่เลือก:', chart_data[chart_data['Line'].isin(options)])
+            condition_data = chart_data_data[chart_data_data['Line'].isin(options)]
+            #print(condition_1)
+            lat = condition_data['lat'].tolist()
+            #print(lat)
+            lon = condition_data['lon'].tolist()
+            #print(lon)
+            # list with each item representing a column
+            ls = []
+            # iterate over the rows
+            for i, row in condition_data.iterrows():
+                # create a list representing the dataframe row
+                row_ls = [row['lon'], row['lat']]
+                # append row list to ls
+                ls.append(row_ls)
+                
+            #print(ls)
+            data = {
+                'path': [ls],
+                'color': ['#faa61a'],
+                'name': ['สายส่ง อปอ.'],
+            }
+            df_data = pd.DataFrame(data)
+            # display the dataframe
+            #st.dataframe(df)
 
+            #st.dataframe(data)
+            def hex_to_rgb(h):
+                h = h.lstrip('#')
+                return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+
+            df_data['color'] = df_data['color'].apply(hex_to_rgb)
+            view_state = pdk.ViewState(
+                latitude=18.534, 
+                longitude=103.611,
+                zoom=5,
+                pitch=50,
+            )
+
+            layer = [pdk.Layer(
+                type='ScatterplotLayer',
+                data=df1,
+                get_position=["lon", "lat"],
+                get_color=[200, 30, 0, 160],
+                get_radius=300,
+                get_line_color=[0, 0, 0],
+                pickable=True,
+                onClick=True,
+                filled=True,
+                line_width_min_pixels=10,
+                            ),
+                pdk.Layer(
+                type="PathLayer",
+                data=df_data,
+                pickable=True,
+                get_color="color",
+                width_scale=20,
+                width_min_pixels=2,
+                get_path="path",
+                get_width=5,
+            )]
+
+            r = pdk.Deck(map_style=None,layers=[layer], initial_view_state=view_state, tooltip={'text': '{name}'})
+
+            st.pydeck_chart(r)
 
 
     if show_histograms:
